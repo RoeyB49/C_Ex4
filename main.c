@@ -1,144 +1,634 @@
+
 #include <stdio.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include <string.h>
 
-struct node {
-    int dst;
-    int weight;
+#define INFINITY 99
+#define MAX 10
+//int arr[10][10], completed[10], n, cost = 0;
+int tspAns;
+
+typedef struct edge {
+    int src, dest, weight;
+    struct edge *next;
+} edge;
+
+typedef struct node {
+    int key;
+    edge *headEdge;
     struct node *next;
-};
+} node;
 
-struct adjList {
-    struct node *head;
-};
+typedef struct graph {
+    int size;
+    node *headNode;
+} graph;
 
-struct Graph {
-    int n;
-    struct adjList *array;
-};
-
-struct node *createNode(int v) {
-    struct node *newNode = malloc(sizeof(struct node));
-    newNode->dst = v;
+node *createNode(int key) {
+    node *newNode = malloc(sizeof(node));
+    newNode->key = key;
     newNode->next = NULL;
     return newNode;
 }
 
-struct Graph *createAGraph(int v) {
-    struct Graph *graph = malloc(sizeof(struct Graph));
-    graph->n = v;
-    graph->array = malloc(v * sizeof(struct node *));
-    int i;
-    for (i = 0; i < v; i++) {
-        graph->array[i].head = NULL;
+edge *createEdge(int src, int dest, int weight) {
+    edge *newEdge = malloc(sizeof(edge));
+    newEdge->src = src;
+    newEdge->dest = dest;
+    newEdge->weight = weight;
+    newEdge->next = NULL;
+    return newEdge;
+}
+
+graph *createGraph(int size) {
+    graph *g = malloc(sizeof(graph));
+    g->size = size;
+    g->headNode = malloc(size * sizeof(node *));
+    g->headNode = NULL;
+//    g->headNode->headEdge = malloc(size * sizeof(edge *));
+//    g->headNode->headEdge = NULL;
+    return g;
+}
+
+void removeEdge(graph *g, node *n, int dest);
+
+void addNode(graph *g, int key) {
+    node *newNode = createNode(key);
+    if (g->headNode == NULL) {
+        g->headNode = newNode;
+        return;
     }
-    return graph;
-}
-
-void addEdge(struct Graph *graph, int src, int dst, int weight) {
-    // Add edge from src to dst
-    struct node *newNode = createNode(dst);
-    newNode->weight = weight;
-    newNode->next = graph->array[src].head;
-    graph->array[src].head = newNode;
-}
-
-void removeEdge(struct Graph *graph, int v) {
-    graph->array[v].head = NULL;
-}
-
-
-void printGraph(struct Graph *g) {
-    for (int v = 0; v < g->n; ++v) {
-        struct node *ptr = g->array[v].head;
-        printf("\n %d\n", v);
-        while (ptr) {
-            printf("->  %d w:%d", ptr->dst, ptr->weight);
-            ptr = ptr->next;
+    node *temp = g->headNode;
+    while (temp->next != NULL) {
+        if (temp->key == key) {
+            temp->headEdge = NULL;
+            return;
         }
-        printf("\n");
+        temp = temp->next;
+    }
+    temp->next = newNode;
+    ///// resize **************************
+//    realloc(g, g->size++);
+
+
+}
+
+void connect(graph *g, int src, int dest, int weight) {
+    edge *newEdge = createEdge(src, dest, weight);
+    node *tempNode = g->headNode;
+    while (tempNode->next != NULL) {
+        if (tempNode->key == src) {
+            if (tempNode->headEdge == NULL) {
+                tempNode->headEdge = newEdge;
+                return;
+            }
+            edge *tempEdge = tempNode->headEdge;
+            while (tempEdge->next != NULL) {
+                tempEdge = tempEdge->next;
+            }
+            tempEdge->next = newEdge;
+        }
+        tempNode = tempNode->next;
+    }
+    //
+
+    if (tempNode->key == src) {
+        if (tempNode->headEdge == NULL) {
+            tempNode->headEdge = newEdge;
+            return;
+        }
+        edge *tempEdge = tempNode->headEdge;
+        while (tempEdge->next != NULL) {
+            tempEdge = tempEdge->next;
+        }
+        tempEdge->next = newEdge;
+    }
+
+}
+
+void removeEdge(graph *g, node *n, int dest) {
+    edge *tempedge = n->headEdge, *prevEdge;
+    if (tempedge != NULL && tempedge->dest == dest) {
+        n->headEdge = tempedge->next;
+        free(tempedge);
+//        realloc(g, g->size--);
+        return;
+    }
+    while (tempedge != NULL && tempedge->dest != dest) {
+        prevEdge = tempedge;
+        tempedge = tempedge->next;
+    }
+    if (tempedge == NULL)
+        return;
+    prevEdge->next = tempedge->next;
+//    realloc(g, g->size--);
+    free(tempedge);
+}
+
+void removeNode(graph *g, int key) {
+    node *tempNode = g->headNode, *prevNode;
+    while (1) {
+        if (tempNode != NULL && tempNode->key == key) {
+            g->headNode = tempNode->next;
+            free(tempNode);
+            realloc(g, g->size--);
+            break;
+        }
+        while (tempNode != NULL && tempNode->key != key) {
+            prevNode = tempNode;
+            tempNode = tempNode->next;
+        }
+        if (tempNode == NULL)
+            break;
+        prevNode->next = tempNode->next;
+        realloc(g, g->size--);
+        free(tempNode);
+        break;
+    }
+    // **** remove in-headEdge ****
+    tempNode = g->headNode;
+    if (tempNode == NULL) {
+        return;
+    }
+    while (tempNode->next != NULL) {
+        edge *tempEdge = tempNode->headEdge, *prevEdge = NULL, *nextEdge = NULL;
+        if (tempEdge == NULL) {
+            tempNode = tempNode->next;
+            continue;
+        }
+        while (tempEdge->next != NULL) {
+            if (tempEdge->dest == key) {
+                removeEdge(g, tempNode, key);
+            }
+            prevEdge = tempEdge;
+            tempEdge = tempEdge->next;
+            nextEdge = tempEdge->next;
+        }
+        if (tempEdge->dest == key) {
+            removeEdge(g, tempNode, key);
+        }
+        tempNode = tempNode->next;
     }
 }
 
-void A(char str[]) {
-    struct Graph *graph = createAGraph(str[0] - '0');
-    int j = 0, k = 0;
+
+void printGraph(graph *g) {
+    printf("\ngraph size = %d\n", g->size);
+    node *tempNode = g->headNode;
+    if (tempNode == NULL)
+        return;
+    while (tempNode->next != NULL) {
+        printf("%d: ", tempNode->key);
+        edge *tempEdge = tempNode->headEdge;
+        if (tempEdge == NULL) {
+            tempNode = tempNode->next;
+            printf("\n");
+            continue;
+        }
+        while (tempEdge->next != NULL) {
+            printf(" (%d, %d, %d) ", tempEdge->src, tempEdge->dest, tempEdge->weight);
+            tempEdge = tempEdge->next;
+        }
+        printf(" (%d, %d, %d) ", tempEdge->src, tempEdge->dest, tempEdge->weight);
+
+        printf("\n");
+        tempNode = tempNode->next;
+    }
+    printf("%d: ", tempNode->key);
+    edge *tempEdge = tempNode->headEdge;
+    if (tempEdge == NULL) {
+        tempNode = tempNode->next;
+        printf("\n");
+        return;
+    }
+    while (tempEdge->next != NULL) {
+        printf(" (%d, %d, %d) ", tempEdge->src, tempEdge->dest, tempEdge->weight);
+        tempEdge = tempEdge->next;
+    }
+    printf(" (%d, %d, %d) ", tempEdge->src, tempEdge->dest, tempEdge->weight);
+}
+
+int dijkstra(int cost[MAX][MAX], int src, int dest) {
+    int dist[MAX], prev[MAX], selected[MAX] = {0};
+    char path[MAX];
+    for (int i = 0; i < MAX; i++) {
+        dist[i] = INFINITY;
+        prev[i] = -1;
+    }
+    int start = src;
+    selected[start] = 1;
+    dist[start] = 0;
+    while (selected[dest] == 0) {
+        int min = INFINITY;
+        int m = 0;
+        for (int i = 0; i < MAX; i++) {
+            int d = dist[start] + cost[start][i];
+            if (d < dist[i] && selected[i] == 0) {
+                dist[i] = d;
+                prev[i] = start;
+            }
+            if (min > dist[i] && selected[i] == 0) {
+                min = dist[i];
+                m = i;
+            }
+        }
+        start = m;
+        selected[start] = 1;
+    }
+    return dist[dest];
+
+}
+
+int shortestPath(graph *g, int src, int dest) {
+    int cost[MAX][MAX];
+    for (int i = 0; i < MAX; i++) {
+        for (int j = 0; j < MAX; j++) {
+            cost[i][j] = INFINITY;
+        }
+    }
+    node *tempNode = g->headNode;
+    if (tempNode == NULL)
+        return -1;
+    while (tempNode->next != NULL) {
+        edge *tempEdge = tempNode->headEdge;
+        if (tempEdge == NULL) {
+            tempNode = tempNode->next;
+            continue;
+        }
+        while (tempEdge->next != NULL) {
+            cost[tempEdge->src][tempEdge->dest] = tempEdge->weight;
+            tempEdge = tempEdge->next;
+        }
+        cost[tempEdge->src][tempEdge->dest] = tempEdge->weight;
+        tempNode = tempNode->next;
+    }
+    edge *tempEdge = tempNode->headEdge;
+    if (tempEdge == NULL) {
+        tempNode = tempNode->next;
+    } else {
+        while (tempEdge->next != NULL) {
+            cost[tempEdge->src][tempEdge->dest] = tempEdge->weight;
+            tempEdge = tempEdge->next;
+        }
+        cost[tempEdge->src][tempEdge->dest] = tempEdge->weight;
+    }
+
+
+//    // **** printing the matrix for self check ****
+//    int row, columns;
+//    for (row = 0; row < 10; row++) {
+//        for (columns = 0; columns < 10; columns++) {
+//            printf("%d     ", cost[row][columns]);
+//        }
+//        printf("\n");
+//    }
+
+    if (cost[src][dest] == INFINITY)
+        return -1;
+
+/*
+ *      Dijkstra Algorithm:
+ */
+    int dist[MAX], prev[MAX], selected[MAX] = {0};
+    char path[MAX];
+    for (int i = 0; i < MAX; i++) {
+        dist[i] = INFINITY;
+        prev[i] = -1;
+    }
+    int start = src;
+    selected[start] = 1;
+    dist[start] = 0;
+    while (selected[dest] == 0) {
+        int min = INFINITY;
+        int m = 0;
+        for (int i = 0; i < MAX; i++) {
+            int d = dist[start] + cost[start][i];
+            if (d < dist[i] && selected[i] == 0) {
+                dist[i] = d;
+                prev[i] = start;
+            }
+            if (min > dist[i] && selected[i] == 0) {
+                min = dist[i];
+                m = i;
+            }
+        }
+        start = m;
+        selected[start] = 1;
+    }
+    if (dist[dest] == INFINITY)
+        return -1;
+    return dist[dest];
+}
+//
+//int least(int v) {
+//    int i, nc = INFINITY, min = INFINITY, kmin;
+//
+//    for (i = 0; i < MAX; i++) {
+//        if (arr[v][i] != 0 && completed[i] == 0) {
+//            if (arr[v][i] + arr[i][v] < min) {
+//                min = arr[i][0] + arr[v][i];
+//                kmin = arr[v][i];
+//                nc = i;
+//            }
+//        }
+//    }
+//
+//    if (min != INFINITY)
+//        cost += kmin;
+//
+//    return nc;
+//}
+//
+//int minimumCost(int vertex) {
+//    int nVertex;
+//    completed[vertex] = 1;
+//
+//    nVertex = least(vertex);
+//
+//    if (nVertex == INFINITY) {
+//        nVertex = 0;
+//        cost += arr[vertex][nVertex];
+//        return cost;
+//    }
+//    return minimumCost(nVertex);
+//}
+//
+//int tsp(graph *g, int k) {
+////    arr[MAX][MAX];
+//    for (int i = 0; i < MAX; i++) {
+//        for (int j = 0; j < MAX; j++) {
+//            arr[i][j] = INFINITY;
+//        }
+//    }
+//    node *tempNode = g->headNode;
+//    if (tempNode == NULL)
+//        return -1;
+//    while (tempNode->next != NULL) {
+//        edge *tempEdge = tempNode->headEdge;
+//        if (tempEdge == NULL) {
+//            tempNode = tempNode->next;
+//            continue;
+//        }
+//        while (tempEdge->next != NULL) {
+//            arr[tempEdge->src][tempEdge->dest] = tempEdge->weight;
+//            tempEdge = tempEdge->next;
+//        }
+//        arr[tempEdge->src][tempEdge->dest] = tempEdge->weight;
+//        tempNode = tempNode->next;
+//    }
+//    edge *tempEdge = tempNode->headEdge;
+//    if (tempEdge == NULL) {
+//        tempNode = tempNode->next;
+//    } else {
+//        while (tempEdge->next != NULL) {
+//            arr[tempEdge->src][tempEdge->dest] = tempEdge->weight;
+//            tempEdge = tempEdge->next;
+//        }
+//        arr[tempEdge->src][tempEdge->dest] = tempEdge->weight;
+//    }
+//    for (int i = 0; i < MAX; i++) {
+//        completed[i] = 0;
+//    }
+//    return minimumCost(k);
+//
+//}
+
+//void swap(int *x, int *y) {
+//    int temp;
+//    temp = *x;
+//    *x = *y;
+//    *y = temp;
+//}
+
+/* Function to print permutations of string
+This function takes three parameters:
+1. String
+2. Starting index of the string
+3. Ending index of the string. */
+void permute(graph *g, int a[], int size, int l, int r) {
+    int i;
+
+    if (l == r) {
+//        tspAns = INFINITY;
+        int temp2 = INFINITY;
+//        for (int j = 0; j < size; j++)
+//            printf("%d, ", a[j]);
+//        printf("\n");
+        int tempAns = 0;
+        for (int j = 0; j <= size - 2; j++) {
+//            printf("j = %d\n", j);
+            int x = shortestPath(g, a[j], a[j + 1]);
+//            printf("x = %d\n", x);
+            if (x == -1) {
+                tempAns = INFINITY;
+                break;
+            }
+            tempAns += x;
+//            tempAns += shortestPath(g, a[j], a[j + 1]);
+        }
+//        printf("%d\n", tempAns);
+        if (tempAns < temp2) {
+            tspAns = tempAns;
+        }
+//        printf("\nTSP shortest path: %d", tspAns);
+    } else {
+        for (i = l; i <= r; i++) {
+//            swap((a + l), (a + i));
+            int temp;
+            temp = a[l];
+            a[l] = a[i];
+            a[i] = temp;
+            permute(g, a, size, l + 1, r);
+//            swap((a + l), (a + i)); //backtrack
+            temp = a[l];
+            a[l] = a[i];
+            a[i] = temp;
+        }
+    }
+}
+
+
+graph *a(graph *g, char str[]) {
+//    printf("%s\n", str);
+    g = createGraph(str[0] - '0');
+    for (int i = 0; i < strlen(str); i++) {
+        if (str[i] == 'n')
+            addNode(g, str[i + 1] - '0');
+    }
+    int j, k;
     for (int i = 2; i < strlen(str) - 1; i++) {
         j = i + 1;
         k = i + 2;
         while (str[j] != 'n') {
-            addEdge(graph, str[i] - '0', str[j] - '0', str[k] - '0');
+            connect(g, str[i] - '0', str[j] - '0', str[k] - '0');
             j += 2;
             k += 2;
         }
         i = j;
     }
-//    printGraph(graph);
+//    printGraph(g);
+    return g;
 }
 
-void B(struct Graph *graph, char str[]) {
-    if (str[0] - '0' < graph->n) {
-        removeEdge(graph, str[0] - '0');
-    }
-    int i = 0, j = 0, k = 0;
-    j = i + 1;
-    k = i + 2;
-    while (j < strlen(str)) {
-        addEdge(graph, str[i] - '0', str[j] - '0', str[k] - '0');
+graph *b(graph *g, char str[]) {
+//    5 0 4 2 1
+    addNode(g, str[0] - '0');
+    int j, k;
+    j = 1;
+    k = 2;
+    while (k < strlen(str)) {
+        connect(g, str[0] - '0', str[j] - '0', str[k] - '0');
         j += 2;
         k += 2;
     }
-    i = j;
+//    printGraph(g);
+//    printf("%s\n", str);
+
+    return g;
 }
-void D(struct Graph *graph, char str[]) {
-    graph->array[str[0] - '0'].head = NULL;
-    int i = 0;
-    while (i < graph->n) {
-        struct node *tmp = graph->array[i].head;
-        if(tmp->next==NULL&&tmp->dst == str[0] - '0'){
-            tmp=NULL;
-        }
-        if(tmp!=NULL) {
-            while (tmp->next != NULL) {
-                if (tmp->dst == str[0] - '0') {
-                    if (tmp->next != NULL)
-                        tmp = tmp->next;
-                    if(tmp->next==NULL)
-                        tmp=NULL;
-                }
-                tmp = tmp->next;
-            }
-        }
-        i++;
+
+graph *d(graph *g, char str[]) {
+    removeNode(g, str[0] - '0');
+//    printGraph(g);
+    //    printf("%s\n", str);
+    return g;
+
+}
+
+void s(graph *g, char str[]) {
+    printf("\nDijsktra shortest path: %d\n", shortestPath(g, str[0] - '0', str[1] - '0'));
+}
+
+void t(graph *g, char str[]) {
+//    printf("%s\n", str);
+    int min = INFINITY;
+
+////    int temp[strlen(str) - 2];
+//    for (int i = 1; i < strlen(str); i++) {
+//        int tempMin = tsp(g, str[i] - '0');
+//        if (tempMin < min) {
+//            min = tempMin;
+//        }
+//    }
+//    printf("\nTSP shortest path: %d", min);
+    int temp[strlen(str) - 1];
+    int j = 0;
+    for (int i = 1; i < strlen(str); i++) {
+        temp[j] = str[i] - '0';
+        j++;
     }
+//    temp[j] = '\0';
+    permute(g, temp, j, 0, j - 1);
+    printf("\nTSP shortest path: %d", tspAns);
 }
+
 int main() {
-//    struct Graph *graph = createAGraph(3);
-//    addEdge(graph, 0, 1, 5);
-//    addEdge(graph, 0, 2, 7);
-//    addEdge(graph, 1, 0, 9);
-//    graph->array[0].head = NULL;
-//    printGraph(graph);
-    char str[]="4n02533n20411n13702n3";
-    struct Graph *graph = createAGraph(str[0] - '0');
-    int j = 0, k = 0;
-    for (int i = 2; i < strlen(str) - 1; i++) {
-        j = i + 1;
-        k = i + 2;
-        while (str[j] != 'n') {
-            addEdge(graph, str[i] - '0', str[j] - '0', str[k] - '0');
-            j += 2;
-            k += 2;
+    graph *g = createGraph(4);
+    char temp[100], input[100];
+    char A[100], B[100], D[100], S[100], T[100];
+    scanf("%[^\n]s", temp);
+    int i;
+    int j = 0;
+    for (i = 0; i < strlen(temp); i++) {
+        if (temp[i] != ' ') {
+            input[j] = temp[i];
+            j++;
         }
-        i = j;
     }
-//    A(str);
-    printGraph(graph);
-//    char str1[]="01821";
-//    B(graph,str1);
-//    printGraph(graph);
-//    char str1[]="01821";
-    char str1[]="2";
-    D(graph,str1);
-    printGraph(graph);
+    input[i] = '\0';
+//    printf("%s", input);
+    if (input[0] != 'A')
+        return 0;
+    i = 0;
+
+    while (i < strlen(input)) {
+        if (input[i] == 'A') {
+            j = 0;
+            i++;
+            while ((input[i] >= '0' && input[i] <= '9') || input[i] == 'n') {
+                A[j] = input[i];
+                j++;
+                i++;
+            }
+            A[j] = '\0';
+            g = a(g, A);
+        } else if (input[i] == 'B') {
+            j = 0;
+            i++;
+            while ((input[i] >= '0' && input[i] <= '9')) {
+                B[j] = input[i];
+                j++;
+                i++;
+            }
+            B[j] = '\0';
+            b(g, B);
+        } else if (input[i] == 'D') {
+            j = 0;
+            i++;
+            while ((input[i] >= '0' && input[i] <= '9')) {
+                D[j] = input[i];
+                j++;
+                i++;
+            }
+            D[j] = '\0';
+            d(g, D);
+        } else if (input[i] == 'S') {
+            j = 0;
+            i++;
+            while ((input[i] >= '0' && input[i] <= '9')) {
+                S[j] = input[i];
+                j++;
+                i++;
+            }
+            S[j] = '\0';
+            s(g, S);
+        } else if (input[i] == 'T') {
+            j = 0;
+            i++;
+            while ((input[i] >= '0' && input[i] <= '9')) {
+                T[j] = input[i];
+                j++;
+                i++;
+            }
+            T[j] = '\0';
+            t(g, T);
+        }
+
+//        i++;
+    }
+
+
+
+
+//    addNode(g, 0);
+//    addNode(g, 1);
+//    addNode(g, 2);
+//    addNode(g, 3);
+//    connect(g, 0, 2, 5);
+//    connect(g, 0, 3, 3);
+//    connect(g, 1, 0, 2);
+//    connect(g, 1, 3, 7);
+//    connect(g, 2, 1, 1);
+//    connect(g, 2, 0, 4);
+//    printf("%d", shortestPath(g, 2, 0));
+//    printGraph(g);
+//
+//    graph *g = createGraph(4);
+//    addNode(g, 0);
+//    addNode(g, 1);
+//    addNode(g, 2);
+//    addNode(g, 3);
+//    connect(g, 0, 1, 4);
+//    connect(g, 0, 2, 1);
+//    connect(g, 0, 3, 3);
+//    connect(g, 1, 0, 4);
+//    connect(g, 1, 2, 2);
+//    connect(g, 2, 0, 1);
+//    connect(g, 2, 1, 2);
+//    connect(g, 2, 3, 5);
+//    connect(g, 3, 0, 3);
+//    connect(g, 3, 1, 1);
+//    connect(g, 3, 2, 5);
+//    printf("%d", tsp(g, 0));
+    return 0;
 }
