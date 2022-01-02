@@ -393,23 +393,11 @@ int shortestPath(graph *g, int src, int dest) {
 //
 //}
 
-//void swap(int *x, int *y) {
-//    int temp;
-//    temp = *x;
-//    *x = *y;
-//    *y = temp;
-//}
 
-/* Function to print permutations of string
-This function takes three parameters:
-1. String
-2. Starting index of the string
-3. Ending index of the string. */
 void permute(graph *g, int a[], int size, int l, int r) {
     int i;
 
     if (l == r) {
-//        tspAns = INFINITY;
         int temp2 = INFINITY;
 //        for (int j = 0; j < size; j++)
 //            printf("%d, ", a[j]);
@@ -430,6 +418,7 @@ void permute(graph *g, int a[], int size, int l, int r) {
         if (tempAns < temp2) {
             tspAns = tempAns;
         }
+
 //        printf("\nTSP shortest path: %d", tspAns);
     } else {
         for (i = l; i <= r; i++) {
@@ -518,14 +507,20 @@ void t(graph *g, char str[]) {
         j++;
     }
 //    temp[j] = '\0';
+    tspAns = -1;
     permute(g, temp, j, 0, j - 1);
-    printf("TSP shortest path: %d \n", tspAns);
+    if (tspAns == INFINITY) {
+        printf("TSP shortest path: %d \n", -1);
+    } else {
+        printf("TSP shortest path: %d \n", tspAns);
+    }
 }
 
 int main() {
     graph *g = createGraph(4);
-    char temp[100], input[100];
-    char A[100], B[100], D[100], S[100], T[100];
+    int max = 2000;
+    char temp[max], input[max];
+    char A[max], B[max], D[max], S[max], T[max];
     scanf("%[^\n]s", temp);
     int i;
     int j = 0;
@@ -536,7 +531,6 @@ int main() {
         }
     }
     input[i] = '\0';
-//    printf("%s", input);
     if (input[0] != 'A')
         return 0;
     i = 0;
@@ -593,42 +587,6 @@ int main() {
             T[j] = '\0';
             t(g, T);
         }
-
-//        i++;
     }
-
-
-
-
-//    addNode(g, 0);
-//    addNode(g, 1);
-//    addNode(g, 2);
-//    addNode(g, 3);
-//    connect(g, 0, 2, 5);
-//    connect(g, 0, 3, 3);
-//    connect(g, 1, 0, 2);
-//    connect(g, 1, 3, 7);
-//    connect(g, 2, 1, 1);
-//    connect(g, 2, 0, 4);
-//    printf("%d", shortestPath(g, 2, 0));
-//    printGraph(g);
-//
-//    graph *g = createGraph(4);
-//    addNode(g, 0);
-//    addNode(g, 1);
-//    addNode(g, 2);
-//    addNode(g, 3);
-//    connect(g, 0, 1, 4);
-//    connect(g, 0, 2, 1);
-//    connect(g, 0, 3, 3);
-//    connect(g, 1, 0, 4);
-//    connect(g, 1, 2, 2);
-//    connect(g, 2, 0, 1);
-//    connect(g, 2, 1, 2);
-//    connect(g, 2, 3, 5);
-//    connect(g, 3, 0, 3);
-//    connect(g, 3, 1, 1);
-//    connect(g, 3, 2, 5);
-//    printf("%d", tsp(g, 0));
     return 0;
 }
