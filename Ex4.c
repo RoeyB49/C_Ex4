@@ -319,84 +319,9 @@ int shortestPath(graph *g, int src, int dest) {
         return -1;
     return dist[dest];
 }
-//
-//int least(int v) {
-//    int i, nc = INFINITY, min = INFINITY, kmin;
-//
-//    for (i = 0; i < MAX; i++) {
-//        if (arr[v][i] != 0 && completed[i] == 0) {
-//            if (arr[v][i] + arr[i][v] < min) {
-//                min = arr[i][0] + arr[v][i];
-//                kmin = arr[v][i];
-//                nc = i;
-//            }
-//        }
-//    }
-//
-//    if (min != INFINITY)
-//        cost += kmin;
-//
-//    return nc;
-//}
-//
-//int minimumCost(int vertex) {
-//    int nVertex;
-//    completed[vertex] = 1;
-//
-//    nVertex = least(vertex);
-//
-//    if (nVertex == INFINITY) {
-//        nVertex = 0;
-//        cost += arr[vertex][nVertex];
-//        return cost;
-//    }
-//    return minimumCost(nVertex);
-//}
-//
-//int tsp(graph *g, int k) {
-////    arr[MAX][MAX];
-//    for (int i = 0; i < MAX; i++) {
-//        for (int j = 0; j < MAX; j++) {
-//            arr[i][j] = INFINITY;
-//        }
-//    }
-//    node *tempNode = g->headNode;
-//    if (tempNode == NULL)
-//        return -1;
-//    while (tempNode->next != NULL) {
-//        edge *tempEdge = tempNode->headEdge;
-//        if (tempEdge == NULL) {
-//            tempNode = tempNode->next;
-//            continue;
-//        }
-//        while (tempEdge->next != NULL) {
-//            arr[tempEdge->src][tempEdge->dest] = tempEdge->weight;
-//            tempEdge = tempEdge->next;
-//        }
-//        arr[tempEdge->src][tempEdge->dest] = tempEdge->weight;
-//        tempNode = tempNode->next;
-//    }
-//    edge *tempEdge = tempNode->headEdge;
-//    if (tempEdge == NULL) {
-//        tempNode = tempNode->next;
-//    } else {
-//        while (tempEdge->next != NULL) {
-//            arr[tempEdge->src][tempEdge->dest] = tempEdge->weight;
-//            tempEdge = tempEdge->next;
-//        }
-//        arr[tempEdge->src][tempEdge->dest] = tempEdge->weight;
-//    }
-//    for (int i = 0; i < MAX; i++) {
-//        completed[i] = 0;
-//    }
-//    return minimumCost(k);
-//
-//}
-
 
 void permute(graph *g, int a[], int size, int l, int r) {
     int i;
-
     if (l == r) {
         int temp2 = INFINITY;
 //        for (int j = 0; j < size; j++)
@@ -518,7 +443,7 @@ void t(graph *g, char str[]) {
 
 int main() {
     graph *g = createGraph(4);
-    int max = 2000;
+    int max = 1024;
     char temp[max], input[max];
     char A[max], B[max], D[max], S[max], T[max];
     scanf("%[^\n]s", temp);
