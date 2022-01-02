@@ -442,14 +442,15 @@ void t(graph *g, char str[]) {
 }
 
 int main() {
-    graph *g = createGraph(4);
+    
     int max = 1024;
     char temp[max], input[max];
     char A[max], B[max], D[max], S[max], T[max];
     scanf("%[^\n]s", temp);
     int i;
     int j = 0;
-    for (i = 0; i < strlen(temp); i++) {
+    int size=strlen(temp);
+    for (i = 0; i < size; i++) {
         if (temp[i] != ' ') {
             input[j] = temp[i];
             j++;
@@ -458,6 +459,7 @@ int main() {
     input[i] = '\0';
     if (input[0] != 'A')
         return 0;
+    graph *g = createGraph(input[1] - '0');
     i = 0;
 
     while (i < strlen(input)) {
