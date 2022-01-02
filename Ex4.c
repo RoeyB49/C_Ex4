@@ -496,7 +496,7 @@ graph *d(graph *g, char str[]) {
 }
 
 void s(graph *g, char str[]) {
-    printf("Dijsktra shortest path: %d\n", shortestPath(g, str[0] - '0', str[1] - '0'));
+    printf("Dijsktra shortest path: %d \n", shortestPath(g, str[0] - '0', str[1] - '0'));
 }
 
 void t(graph *g, char str[]) {
@@ -519,7 +519,7 @@ void t(graph *g, char str[]) {
     }
 //    temp[j] = '\0';
     permute(g, temp, j, 0, j - 1);
-    printf("TSP shortest path: %d\n", tspAns);
+    printf("TSP shortest path: %d \n", tspAns);
 }
 
 int main() {
