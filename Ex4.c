@@ -415,11 +415,13 @@ int main() {
     int max = 1024;
     char temp[max], input[max];
     char A[max], B[max], D[max], S[max], T[max];
-    scanf("%[^\n]s", temp);
+  //  scanf("%[^\n]s", temp);
+    fgets(temp, max, stdin);
     int i;
     int j = 0;
 //    size_t size = 0;
 //    size = strlen(temp);
+
     for (i = 0; i < sizeof(temp); i++) {
         if (temp[i] != 32) {
             input[j] = temp[i];
