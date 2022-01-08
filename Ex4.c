@@ -415,8 +415,7 @@ int main() {
     int max = 1024;
     char temp[max], input[max];
     char A[max], B[max], D[max], S[max], T[max];
-  //  scanf("%[^\n]s", temp);
-    fgets(temp, max, stdin);
+    scanf("%[^\n]s", temp);
     int i;
     int j = 0;
 //    size_t size = 0;
