@@ -261,11 +261,10 @@ int shortestPath(graph *g, int src, int dest) {
 /*
  *      Dijkstra Algorithm:
  */
-    int dist[MAX], prev[MAX], selected[MAX] = {0};
-    char path[MAX];
+    int dist[MAX], selected[MAX] = {0};
     for (int i = 0; i < MAX; i++) {
         dist[i] = INFINITY;
-        prev[i] = -1;
+  //      prev[i] = -1;
     }
     int start = src;
     selected[start] = 1;
@@ -277,7 +276,7 @@ int shortestPath(graph *g, int src, int dest) {
             int d = dist[start] + cost[start][i];
             if (d < dist[i] && selected[i] == 0) {
                 dist[i] = d;
-                prev[i] = start;
+     //           prev[i] = start;
             }
             if (min > dist[i] && selected[i] == 0) {
                 min = dist[i];
@@ -387,8 +386,6 @@ void s(graph *g, char str[]) {
 
 void t(graph *g, char str[]) {
 //    printf("%s\n", str);
-    int min = INFINITY;
-
 ////    int temp[strlen(str) - 2];
 //    for (int i = 1; i < strlen(str); i++) {
 //        int tempMin = tsp(g, str[i] - '0');
