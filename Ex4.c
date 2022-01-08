@@ -131,7 +131,7 @@ void removeNode(graph *g, int key) {
         if (tempNode != NULL && tempNode->key == key) {
             g->headNode = tempNode->next;
             free(tempNode);
-            realloc(g, g->size--);
+            g = realloc(g, g->size--);
             break;
         }
         while (tempNode != NULL && tempNode->key != key) {
@@ -141,7 +141,7 @@ void removeNode(graph *g, int key) {
         if (tempNode == NULL)
             break;
         prevNode->next = tempNode->next;
-        realloc(g, g->size--);
+        g = realloc(g, g->size--);
         free(tempNode);
         break;
     }
