@@ -56,17 +56,20 @@ void addNode(graph *g, int key) {
     node *newNode = createNode(key);
     if (g->headNode == NULL) {
         g->headNode = newNode;
+
         return;
     }
     node *temp = g->headNode;
     while (temp->next != NULL) {
         if (temp->key == key) {
             temp->headEdge = NULL;
+
             return;
         }
         temp = temp->next;
     }
     temp->next = newNode;
+    free(newNode);
     ///// resize **************************
 //    realloc(g, g->size++);
 
@@ -80,6 +83,7 @@ void connect(graph *g, int src, int dest, int weight) {
         if (tempNode->key == src) {
             if (tempNode->headEdge == NULL) {
                 tempNode->headEdge = newEdge;
+                
                 return;
             }
             edge *tempEdge = tempNode->headEdge;
@@ -87,6 +91,7 @@ void connect(graph *g, int src, int dest, int weight) {
                 tempEdge = tempEdge->next;
             }
             tempEdge->next = newEdge;
+      
         }
         tempNode = tempNode->next;
     }
@@ -95,6 +100,7 @@ void connect(graph *g, int src, int dest, int weight) {
     if (tempNode->key == src) {
         if (tempNode->headEdge == NULL) {
             tempNode->headEdge = newEdge;
+            free(newEdge);
             return;
         }
         edge *tempEdge = tempNode->headEdge;
@@ -102,7 +108,9 @@ void connect(graph *g, int src, int dest, int weight) {
             tempEdge = tempEdge->next;
         }
         tempEdge->next = newEdge;
+        
     }
+    //free(newEdge);
 
 }
 
