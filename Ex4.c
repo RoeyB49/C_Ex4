@@ -419,9 +419,10 @@ int main() {
     scanf("%[^\n]s", temp);
     int i = 0;
     int j = 0;
-    size_t size = 0;
-    //size = strlen(temp);
-    for (i = 0; i < size; i++) {
+//    size_t size = 0;
+//    size = strlen(temp);
+
+    for (i = 0; i < sizeof(temp); i++) {
         if (temp[i] != 32) {
             input[j] = temp[i];
             j++;
