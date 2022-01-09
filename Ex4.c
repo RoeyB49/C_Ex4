@@ -131,7 +131,7 @@ void removeNode(graph *g, int key) {
         if (tempNode != NULL && tempNode->key == key) {
             g->headNode = tempNode->next;
             free(tempNode);
-            g = realloc(g, g->size--);
+//            realloc(g, g->size--);
             break;
         }
         while (tempNode != NULL && tempNode->key != key) {
@@ -141,7 +141,7 @@ void removeNode(graph *g, int key) {
         if (tempNode == NULL)
             break;
         prevNode->next = tempNode->next;
-        g = realloc(g, g->size--);
+//        realloc(g, g->size--);
         free(tempNode);
         break;
     }
@@ -335,7 +335,7 @@ void permute(graph *g, int a[], int size, int l, int r) {
 
 graph *a(graph *g, char str[]) {
 //    printf("%s\n", str);
- //   g = createGraph(str[0] - '0');
+    g = createGraph(str[0] - '0');
     for (int i = 0; i < strlen(str); i++) {
         if (str[i] == 'n')
             addNode(g, str[i + 1] - '0');
@@ -431,7 +431,7 @@ int main() {
     input[j] = '\0';
     if (input[0] != 'A')
         return 0;
-    graph *g = createGraph(0);
+    graph *g = createGraph(input[1] - '0');
     i = 0;
 
     while (i < strlen(input)) {
@@ -502,7 +502,7 @@ int main() {
         free(tempNode);
     }
 //    free(g->headNode->headEdge);
-   // free(g->headNode);
+//    free(g->headNode);
     free(g);
 
     return 0;
