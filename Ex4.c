@@ -502,7 +502,7 @@ int main() {
         free(tempNode);
     }
 //    free(g->headNode->headEdge);
-    free(g->headNode);
+   // free(g->headNode);
     free(g);
 
     return 0;
