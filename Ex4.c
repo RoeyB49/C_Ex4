@@ -413,21 +413,21 @@ void t(graph *g, char str[]) {
 int main() {
 
     int max = 1024;
-    char temp[max], input[max];
+    char temp[max];
+    char input[max];
     char A[max], B[max], D[max], S[max], T[max];
     scanf("%[^\n]s", temp);
-    int i;
+    int i = 0;
     int j = 0;
-//    size_t size = 0;
-//    size = strlen(temp);
-
-    for (i = 0; i < sizeof(temp); i++) {
+    size_t size = 0;
+    //size = strlen(temp);
+    for (i = 0; i < size; i++) {
         if (temp[i] != 32) {
             input[j] = temp[i];
             j++;
         }
     }
-    input[i] = '\0';
+    input[j] = '\0';
     if (input[0] != 'A')
         return 0;
     graph *g = createGraph(input[1] - '0');
