@@ -43,10 +43,10 @@ edge *createEdge(int src, int dest, int weight) {
 graph *createGraph(int size) {
     graph *g = malloc(sizeof(graph));
     g->size = size;
-   // g->headNode = malloc(sizeof(node *));
-//   g->headNode = NULL;
-  //  g->headNode->headEdge = malloc(size * sizeof(edge *));
-  // g->headNode->headEdge = NULL;
+    g->headNode = malloc(size * sizeof(node *));
+    g->headNode = NULL;
+//    g->headNode->headEdge = malloc(size * sizeof(edge *));
+//    g->headNode->headEdge = NULL;
     return g;
 }
 
@@ -67,7 +67,6 @@ void addNode(graph *g, int key) {
         temp = temp->next;
     }
     temp->next = newNode;
-    free(newNode);
     ///// resize **************************
 //    realloc(g, g->size++);
 
@@ -132,7 +131,7 @@ void removeNode(graph *g, int key) {
         if (tempNode != NULL && tempNode->key == key) {
             g->headNode = tempNode->next;
             free(tempNode);
-//            realloc(g, g->size--);
+            g = realloc(g, g->size--);
             break;
         }
         while (tempNode != NULL && tempNode->key != key) {
@@ -142,7 +141,7 @@ void removeNode(graph *g, int key) {
         if (tempNode == NULL)
             break;
         prevNode->next = tempNode->next;
-//        realloc(g, g->size--);
+        g = realloc(g, g->size--);
         free(tempNode);
         break;
     }
@@ -265,7 +264,7 @@ int shortestPath(graph *g, int src, int dest) {
     int dist[MAX], selected[MAX] = {0};
     for (int i = 0; i < MAX; i++) {
         dist[i] = INFINITY;
-        //      prev[i] = -1;
+  //      prev[i] = -1;
     }
     int start = src;
     selected[start] = 1;
@@ -277,7 +276,7 @@ int shortestPath(graph *g, int src, int dest) {
             int d = dist[start] + cost[start][i];
             if (d < dist[i] && selected[i] == 0) {
                 dist[i] = d;
-                //           prev[i] = start;
+     //           prev[i] = start;
             }
             if (min > dist[i] && selected[i] == 0) {
                 min = dist[i];
@@ -336,7 +335,7 @@ void permute(graph *g, int a[], int size, int l, int r) {
 
 graph *a(graph *g, char str[]) {
 //    printf("%s\n", str);
-//    g = createGraph(str[0] - '0');
+ //   g = createGraph(str[0] - '0');
     for (int i = 0; i < strlen(str); i++) {
         if (str[i] == 'n')
             addNode(g, str[i + 1] - '0');
@@ -432,7 +431,7 @@ int main() {
     input[j] = '\0';
     if (input[0] != 'A')
         return 0;
-    graph *g = createGraph(input[1] -'0');
+    graph *g = createGraph(input[1] - '0');
     i = 0;
 
     while (i < strlen(input)) {
@@ -502,9 +501,7 @@ int main() {
         headNode = headNode->next;
         free(tempNode);
     }
-//    free(g->headNode->headEdge);
-//    free(g->headNode);
     free(g);
-
+    
     return 0;
 }
