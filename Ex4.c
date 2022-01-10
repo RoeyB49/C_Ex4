@@ -24,42 +24,35 @@ typedef struct graph {
     node *headNode;
 } graph;
 
-//node *newNode;
-//edge *newEdge;
+node *newNode;
+edge *newEdge;
+
+// node* new_node = (node*) malloc(sizeof(node));
+// memset(new_node, 0, sizeof(node));
 
 node *createNode(int key) {
-//    node *newNode = (node*)malloc(sizeof(node));
-//    memset(newNode, 0, sizeof(node));
-    node *newNode = (node*)calloc(0,sizeof(node));
+    newNode = (node*)malloc(sizeof(node));
     memset(newNode, 0, sizeof(node));
     newNode->key = key;
     newNode->next = NULL;
-//    node *temp = newNode;
-//    free(newNode);
-//    newNode = NULL;
     return newNode;
 }
 
 edge *createEdge(int src, int dest, int weight) {
-//    edge *newEdge = (edge*)malloc(sizeof(edge));
-//    memset(newEdge, 0, sizeof(edge));
-    edge *newEdge = (edge*)calloc(0,sizeof(edge));
+    newEdge = (edge*)malloc(sizeof(edge));
     memset(newEdge, 0, sizeof(edge));
     newEdge->src = src;
     newEdge->dest = dest;
     newEdge->weight = weight;
     newEdge->next = NULL;
-//    edge *temp = newEdge;
-//    free(newEdge);
-//    newEdge = NULL;
     return newEdge;
 }
 
 graph *createGraph(int size) {
-    graph *g = (graph*)calloc(0,sizeof(graph));
+    graph *g = (graph*)malloc(sizeof(graph));
     memset(g, 0, sizeof(graph));
     g->size = size;
-
+    
 //    g->headNode = malloc(size * sizeof(node *));
 //    g->headNode = NULL;
 //    g->headNode->headEdge = malloc(size * sizeof(edge *));
@@ -70,7 +63,7 @@ graph *createGraph(int size) {
 void removeEdge(graph *g, node *n, int dest);
 
 void addNode(graph *g, int key) {
-    node *newNode = createNode(key);
+    newNode = createNode(key);
     if (g->headNode == NULL) {
         g->headNode = newNode;
         return;
@@ -87,7 +80,7 @@ void addNode(graph *g, int key) {
 }
 
 void connect(graph *g, int src, int dest, int weight) {
-    edge *newEdge = createEdge(src, dest, weight);
+    newEdge = createEdge(src, dest, weight);
     node *tempNode = g->headNode;
     while (tempNode->next != NULL) {
         if (tempNode->key == src) {
@@ -140,7 +133,7 @@ void removeNode(graph *g, int key) {
     while (1) {
         if (tempNode != NULL && tempNode->key == key) {
             g->headNode = tempNode->next;
-            //     g = realloc(g, g->size--);
+       //     g = realloc(g, g->size--);
             break;
         }
         while (tempNode != NULL && tempNode->key != key) {
@@ -151,7 +144,7 @@ void removeNode(graph *g, int key) {
             break;
         }
         prevNode->next = tempNode->next;
-        //     g = realloc(g, g->size--);
+   //     g = realloc(g, g->size--);
 
         break;
     }
@@ -176,9 +169,9 @@ void removeNode(graph *g, int key) {
         }
         if (tempEdge->dest == key) {
             removeEdge(g, tempNode, key);
-            free(tempEdge);
-            free(prevEdge);
-            free(nextEdge);
+//            free(tempEdge);
+//            free(prevEdge);
+//            free(nextEdge);
         }
         tempNode = tempNode->next;
     }
@@ -379,7 +372,7 @@ int main() {
     char input[max];
     char A[max], B[max], D[max], S[max], T[max];
     for(int i = 0; i<max;i++){
-        temp[i] = 0;
+    	temp[i] = 0;
     }
     scanf("%[^\n]s", temp);
     int i = 0;
@@ -387,7 +380,7 @@ int main() {
 //    size_t size = 0;
 //    size = strlen(temp);
 
-
+	
     for (i = 0; i < sizeof(temp); i++) {
         if (temp[i] != 32) {
             input[j] = temp[i];
@@ -453,7 +446,7 @@ int main() {
             t(g, T);
         }
     }
-        node *tempNode;
+    node *tempNode;
     node *headNode = g->headNode;
     while (headNode != NULL) {
         edge *tempEdge;
@@ -467,9 +460,8 @@ int main() {
         headNode = headNode->next;
         free(tempNode);
     }
-
-    //  free(newEdge);
-    // free(newNode);
+  //  free(newEdge);
+   // free(newNode);
     free(g);
     exit(0);
 }
