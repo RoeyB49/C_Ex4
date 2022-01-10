@@ -24,15 +24,23 @@ typedef struct graph {
     node *headNode;
 } graph;
 
+node *newNode;
+edge *newEdge;
+
+// node* new_node = (node*) malloc(sizeof(node));
+// memset(new_node, 0, sizeof(node));
+
 node *createNode(int key) {
-    node *newNode = malloc(sizeof(node));
+    newNode = (node*)malloc( sizeof(node));
+    memset(newNode, 0, sizeof(node));
     newNode->key = key;
     newNode->next = NULL;
     return newNode;
 }
 
 edge *createEdge(int src, int dest, int weight) {
-    edge *newEdge = malloc(sizeof(edge));
+    newEdge = (edge*)malloc( sizeof(edge));
+    memset(newEdge, 0, sizeof(edge));
     newEdge->src = src;
     newEdge->dest = dest;
     newEdge->weight = weight;
@@ -41,10 +49,12 @@ edge *createEdge(int src, int dest, int weight) {
 }
 
 graph *createGraph(int size) {
-    graph *g = malloc(sizeof(graph));
+    graph *g = (graph*)malloc(sizeof(graph));
+    memset(g, 0, sizeof(graph));
     g->size = size;
-    g->headNode = malloc(size * sizeof(node *));
-    g->headNode = NULL;
+    
+//    g->headNode = malloc(size * sizeof(node *));
+//    g->headNode = NULL;
 //    g->headNode->headEdge = malloc(size * sizeof(edge *));
 //    g->headNode->headEdge = NULL;
     return g;
@@ -53,7 +63,7 @@ graph *createGraph(int size) {
 void removeEdge(graph *g, node *n, int dest);
 
 void addNode(graph *g, int key) {
-    node *newNode = createNode(key);
+    newNode = createNode(key);
     if (g->headNode == NULL) {
         g->headNode = newNode;
         return;
@@ -67,14 +77,10 @@ void addNode(graph *g, int key) {
         temp = temp->next;
     }
     temp->next = newNode;
-    ///// resize **************************
-//    realloc(g, g->size++);
-
-
 }
 
 void connect(graph *g, int src, int dest, int weight) {
-    edge *newEdge = createEdge(src, dest, weight);
+    newEdge = createEdge(src, dest, weight);
     node *tempNode = g->headNode;
     while (tempNode->next != NULL) {
         if (tempNode->key == src) {
@@ -108,21 +114,18 @@ void connect(graph *g, int src, int dest, int weight) {
 
 void removeEdge(graph *g, node *n, int dest) {
     edge *tempedge = n->headEdge, *prevEdge;
-    if (tempedge != NULL && tempedge->dest == dest) {
+    if(tempedge != NULL && tempedge->dest == dest) {
         n->headEdge = tempedge->next;
-        free(tempedge);
-//        realloc(g, g->size--);
         return;
     }
     while (tempedge != NULL && tempedge->dest != dest) {
         prevEdge = tempedge;
         tempedge = tempedge->next;
     }
-    if (tempedge == NULL)
+    if (tempedge == NULL) {
         return;
+    }
     prevEdge->next = tempedge->next;
-//    realloc(g, g->size--);
-    free(tempedge);
 }
 
 void removeNode(graph *g, int key) {
@@ -130,19 +133,19 @@ void removeNode(graph *g, int key) {
     while (1) {
         if (tempNode != NULL && tempNode->key == key) {
             g->headNode = tempNode->next;
-            free(tempNode);
-            g = realloc(g, g->size--);
+       //     g = realloc(g, g->size--);
             break;
         }
         while (tempNode != NULL && tempNode->key != key) {
             prevNode = tempNode;
             tempNode = tempNode->next;
         }
-        if (tempNode == NULL)
+        if (tempNode == NULL){
             break;
+        }
         prevNode->next = tempNode->next;
-        g = realloc(g, g->size--);
-        free(tempNode);
+   //     g = realloc(g, g->size--);
+
         break;
     }
     // **** remove in-headEdge ****
@@ -174,42 +177,6 @@ void removeNode(graph *g, int key) {
     }
 }
 
-
-void printGraph(graph *g) {
-    printf("\ngraph size = %d\n", g->size);
-    node *tempNode = g->headNode;
-    if (tempNode == NULL)
-        return;
-    while (tempNode->next != NULL) {
-        printf("%d: ", tempNode->key);
-        edge *tempEdge = tempNode->headEdge;
-        if (tempEdge == NULL) {
-            tempNode = tempNode->next;
-            printf("\n");
-            continue;
-        }
-        while (tempEdge->next != NULL) {
-            printf(" (%d, %d, %d) ", tempEdge->src, tempEdge->dest, tempEdge->weight);
-            tempEdge = tempEdge->next;
-        }
-        printf(" (%d, %d, %d) ", tempEdge->src, tempEdge->dest, tempEdge->weight);
-
-        printf("\n");
-        tempNode = tempNode->next;
-    }
-    printf("%d: ", tempNode->key);
-    edge *tempEdge = tempNode->headEdge;
-    if (tempEdge == NULL) {
-        tempNode = tempNode->next;
-        printf("\n");
-        return;
-    }
-    while (tempEdge->next != NULL) {
-        printf(" (%d, %d, %d) ", tempEdge->src, tempEdge->dest, tempEdge->weight);
-        tempEdge = tempEdge->next;
-    }
-    printf(" (%d, %d, %d) ", tempEdge->src, tempEdge->dest, tempEdge->weight);
-}
 
 int shortestPath(graph *g, int src, int dest) {
     int cost[MAX][MAX];
@@ -246,15 +213,6 @@ int shortestPath(graph *g, int src, int dest) {
     }
 
 
-//    // **** printing the matrix for self check ****
-//    int row, columns;
-//    for (row = 0; row < 10; row++) {
-//        for (columns = 0; columns < 10; columns++) {
-//            printf("%d     ", cost[row][columns]);
-//        }
-//        printf("\n");
-//    }
-
     if (cost[src][dest] == INFINITY)
         return -1;
 
@@ -264,7 +222,7 @@ int shortestPath(graph *g, int src, int dest) {
     int dist[MAX], selected[MAX] = {0};
     for (int i = 0; i < MAX; i++) {
         dist[i] = INFINITY;
-  //      prev[i] = -1;
+        //      prev[i] = -1;
     }
     int start = src;
     selected[start] = 1;
@@ -276,7 +234,7 @@ int shortestPath(graph *g, int src, int dest) {
             int d = dist[start] + cost[start][i];
             if (d < dist[i] && selected[i] == 0) {
                 dist[i] = d;
-     //           prev[i] = start;
+                //           prev[i] = start;
             }
             if (min > dist[i] && selected[i] == 0) {
                 min = dist[i];
@@ -335,7 +293,7 @@ void permute(graph *g, int a[], int size, int l, int r) {
 
 graph *a(graph *g, char str[]) {
 //    printf("%s\n", str);
- //   g = createGraph(str[0] - '0');
+    //   g = createGraph(str[0] - '0');
     for (int i = 0; i < strlen(str); i++) {
         if (str[i] == 'n')
             addNode(g, str[i + 1] - '0');
@@ -366,9 +324,6 @@ graph *b(graph *g, char str[]) {
         j += 2;
         k += 2;
     }
-//    printGraph(g);
-//    printf("%s\n", str);
-
     return g;
 }
 
@@ -416,12 +371,16 @@ int main() {
     char temp[max];
     char input[max];
     char A[max], B[max], D[max], S[max], T[max];
+    for(int i = 0; i<max;i++){
+    	temp[i] = 0;
+    }
     scanf("%[^\n]s", temp);
     int i = 0;
     int j = 0;
 //    size_t size = 0;
 //    size = strlen(temp);
 
+	
     for (i = 0; i < sizeof(temp); i++) {
         if (temp[i] != 32) {
             input[j] = temp[i];
@@ -501,7 +460,8 @@ int main() {
         headNode = headNode->next;
         free(tempNode);
     }
+    free(newEdge);
+    free(newNode);
     free(g);
-    
-    return 0;
+    exit(0);
 }
