@@ -460,8 +460,8 @@ int main() {
         headNode = headNode->next;
         free(tempNode);
     }
-    free(newEdge);
-    free(newNode);
+   // free(newEdge);
+   // free(newNode);
     free(g);
     exit(0);
 }
